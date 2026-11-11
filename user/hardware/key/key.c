@@ -1,6 +1,7 @@
 #include "key.h"
 #include "../../common/bit.h"
 #include "../../config/keyConfig.h"
+#include "../../hardware/motor/motor.h"
 
 #include <main.h>
 
