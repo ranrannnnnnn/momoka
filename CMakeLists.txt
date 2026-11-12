@@ -34,8 +34,8 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
         user/main.c
-        user/hardware/motor/Motor.c
-        user/hardware/motor/Motor.h
+        user/hardware/motor/motor.c
+        user/hardware/motor/motor.h
         user/config/pidConfig.h
         user/common/bit.h
         user/common/args_define.h
@@ -53,8 +53,12 @@ add_executable(${CMAKE_PROJECT_NAME}
         user/hardware/motor/motor_encoder.c
         user/hardware/motor/motor_encoder.h
         user/config/motorConfig.h
-        user/common/args_listener.c
-        user/common/args_listener.h
+        user/common/args_listener/args_listener.c
+        user/common/args_listener/args_listener.h
+        user/connectivity/i2c/i2c.c
+        user/connectivity/i2c/i2c.h
+        user/common/string.c
+        user/common/string.h
 )
 
 # Add STM32CubeMX generated sources

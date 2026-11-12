@@ -3,6 +3,7 @@
 #include "common/args_define.h"
 #include "hardware/led/led.h"
 #include "hardware/key/key.h"
+#include "hardware/oled/oled.h"
 
 // hardware
 Key key0;
@@ -15,6 +16,7 @@ void hardware_init(void) {
     Key_init(&key0, KeyType_KEY0);
     Key_init(&key1, KeyType_KEY1);
     Key_init(&key2, KeyType_KEY2);
+    OLED_Init();
 }
 
 void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或清理工作

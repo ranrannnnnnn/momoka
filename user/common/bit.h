@@ -49,8 +49,7 @@ static inline void Bit_writeBit_tool(uint8_t* a, uint8_t n, uint8_t writeData) {
  * @param writeData 写入数据
  */
 static inline void Bit_writeMultipleBits_tool(uint8_t* a, uint8_t n, uint8_t size, uint8_t writeData) {
-    uint8_t temp;
-    MathBase_pow_tool(2, size, &temp);
+    uint8_t temp = MathBase_pow_tool(2, size);
     temp -= 1; temp <<= n; temp = ~temp;
     *a &= temp;
     *a += (writeData << n);
@@ -74,8 +73,7 @@ static inline uint8_t Bit_readBit_tool(const uint8_t* a, uint8_t n) {
  * @return 读取的数据
  */
 static inline uint8_t Bit_readMultipleBits_tool(const uint8_t* a, uint8_t n, uint8_t size) {
-    uint8_t temp;
-    MathBase_pow_tool(2, size, &temp);
+    uint8_t temp = MathBase_pow_tool(2, size);
     temp -= 1; temp <<= n;
     return (*a & temp) >> n;
 }

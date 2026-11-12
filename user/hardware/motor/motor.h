@@ -25,7 +25,7 @@ typedef enum {
 }MotorDirection;
 
 typedef struct {
-    MotorStatus motorStatus;
+    MotorStatus status;
     MotorDirection direction;
     MotorGear gear;
     Pid pid;

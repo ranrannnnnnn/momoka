@@ -1,7 +1,7 @@
 #include "motor.h"
 
 #include "motor_ir2104.h"
-#include "stm32f1xx_hal_tim.h"
+#include "stm32f1xx_hal.h"
 #include "../../common/pid/pid.h"
 
 
@@ -49,28 +49,44 @@ void Motor_statusCheck_method(void) {
 void Motor_start_method(void) {
     Ir2104_open_method(IR2104_0);
     Ir2104_open_method(IR2104_1);
-    Pid_r_setter(&pid0, );
-    Pid_start_method(&pid0);
+    // Pid_r_setter(&pid0, );
+    // Pid_start_method(&pid0);
 }
 
 void Motor_stop_method(void) {
     
 }
 
-void Motor_changeGear_method(void) {}
+void Motor_changeGear_method(void) {
 
-void Motor_changeDirection_method(void) {}
+}
+
+void Motor_changeDirection_method(void) {
+
+}
 
 // ---------------Getter---------------
-MotorStatus Motor_motorStatus_getter(void) {}
+MotorStatus Motor_motorStatus_getter(void) {
+    return motor.status;
+}
 
-MotorGear Motor_motorGear_getter(void) {}
+MotorGear Motor_motorGear_getter(void) {
+    return motor.gear;
+}
 
-MotorDirection Motor_motorDirection_getter(void) {}
+MotorDirection Motor_motorDirection_getter(void) {
+    return motor.direction;
+}
 
 // ---------------Setter---------------
-void Motor_motorStatus_setter(MotorStatus motorStatus) {}
+void Motor_motorStatus_setter(MotorStatus status) {
+    motor.status = status;
+}
 
-void Motor_motorDirection_setter(MotorGear motorGear) {}
+void Motor_motorDirection_setter(MotorGear gear) {
+    motor.gear = gear;
+}
 
-void Motor_motorGear_setter(MotorDirection motorDirection) {}
+void Motor_motorGear_setter(MotorDirection direction) {
+    motor.direction = direction;
+}

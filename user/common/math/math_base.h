@@ -11,20 +11,21 @@
   * @param result 指针形式 用于存储返回值
   * @retval None
   */
-#define MathBase_pow_tool(base, exponent, result)  do{\
+#define MathBase_pow_tool(base, exponent)  ({\
     __typeof__(base) mathPowBase = base;\
     __typeof__(exponent) mathPowExponent = exponent;\
-    *result = 1;\
+    __typeof__(base) mathPowresult = 1;\
     while (mathPowExponent > 0)\
     {\
         if (mathPowExponent & 1)\
         {\
-            (*result) *= mathPowBase;\
+            (mathPowresult) *= mathPowBase;\
         }\
         mathPowBase *= mathPowBase;\
         mathPowExponent >>= 1;\
     }\
-}while (0)
+    mathPowresult;\
+})
 
 /**
   * @brief  max()函数
@@ -37,3 +38,14 @@
     if (mathMaxA > mathMaxB) { *result = mathMaxA; }\
     else { *result = mathMaxB; }\
 }while (0)
+
+#define MathBase_numberLength_tool(num) ({\
+    __typeof__(num) mathnumberLengthCnt = 0;\
+    while (1) {\
+        if (num - MathBase_pow_tool(10, mathnumberLengthCnt) > num) {\
+            break;\
+        }\
+        mathnumberLengthCnt++;\
+    }\
+    mathnumberLengthCnt;\
+})
