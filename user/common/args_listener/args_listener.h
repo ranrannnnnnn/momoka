@@ -8,3 +8,8 @@ typedef struct {
     uint8_t flag;
     String argName;
 }ArgListen;
+
+typedef uint16_t (*getterFunction)(void);
+
+void ArgListener_init(void);
+void ArgListener_TIM4_interruptCallFunction(void);

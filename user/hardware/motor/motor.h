@@ -29,6 +29,7 @@ typedef struct {
     MotorDirection direction;
     MotorGear gear;
     Pid pid;
+    uint16_t pwm;
 }Motor;
 
 void Motor_init(void);
@@ -37,11 +38,12 @@ void Motor_hardwareFinalize(void);
 void Motor_statusCheck_method(void);
 void Motor_start_method(void);
 void Motor_stop_method(void);
-void Motor_changeGear_method(void);
+void Motor_updateGear_method(void);
 void Motor_changeDirection_method(void);
 MotorStatus Motor_motorStatus_getter(void);
 MotorGear Motor_motorGear_getter(void);
 MotorDirection Motor_motorDirection_getter(void);
+uint16_t Motor_motorPwm_getter(void);
 void Motor_motorStatus_setter(MotorStatus motorStatus);
 void Motor_motorDirection_setter(MotorGear motorGear);
 void Motor_motorGear_setter(MotorDirection motorDirection);
