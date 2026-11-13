@@ -4,22 +4,35 @@
 #include "stm32f1xx_hal.h"
 #include "../../common/pid/pid.h"
 
+static void Motor_pwmOutput_method(uint16_t pwm);
 
 // ---------------Args---------------
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 
-volatile uint8_t MotorStatusCheckInterruptFlag = 0;
+static uint16_t gearAimRpmList[3] = {150, 200, 300};
+
+volatile static uint8_t MotorStatusCheckInterruptFlag = 0;
+volatile static uint8_t watchDogFlag = 0;
+static uint8_t motorLockedFlag = 0;
 static Motor motor;
 // ---------------Init---------------
 void Motor_init(void) {
     // 初始化PID实例
     // 占空比15% - 85%
-    // Pid_init(&pid0, 1, 0, 2, 6, 0.05f, 3059, 539, 30, 50, );  TODO
+    Pid_init(&motor.pid, 1, 0, 2, 6, 0.05f, 3059, 539, 50, Motor_pwmOutput_method, ..., Motor_motorPwm_getter);
+    motor.direction = MotorDirection_Right;
+    motor.status = MotorStatus_STOPPED;
+
+    // 初始化编码器 TODO
 }
 
 void Motor_harwareInit(void) {
-    // TODO
+    htim3.Init.Period = 4999;
+    htim3.Init.Prescaler = 7199;
+    HAL_TIM_Base_Init(&htim3);
+    Ir2104_close_method(IR2104_0);
+    Ir2104_close_method(IR2104_1);
 }
 
 void Motor_hardwareFinalize(void) {
@@ -33,46 +46,79 @@ void Motor_statusCheck_method(void) {
     __HAL_TIM_CLEAR_IT(&htim1, TIM_FLAG_UPDATE);
     HAL_TIM_Base_Start_IT(&htim3);
     HAL_TIM_Base_Start(&htim3);
+    Ir2104_open_method(IR2104_0);
+    Ir2104_open_method(IR2104_1);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 1500);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-    // 编码器数值回馈  TODO
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 1500);
-    // 编码器数值回馈
+    MotorStatusCheckInterruptFlag = 1;
+    while (motor.status != MotorStatus_RUNNING) {
+        if (watchDogFlag)
+        { break; }
+    }
+    MotorStatusCheckInterruptFlag = 0;
     HAL_TIM_Base_Stop_IT(&htim3);
     HAL_TIM_Base_Stop(&htim3);
-    // 刹车
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+    if (watchDogFlag) {
+        Ir2104_close_method(IR2104_0);
+        Ir2104_close_method(IR2104_1);
+        while (1) {}
+    }
+    else {
+        while (motor.status != MotorStatus_STOPPED) {}
+    }
+    __HAL_TIM_CLEAR_IT(&htim1, TIM_FLAG_UPDATE);
+    HAL_TIM_Base_Start_IT(&htim3);
+    HAL_TIM_Base_Start(&htim3);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 1500);
+    MotorStatusCheckInterruptFlag = 1;
+    while (motor.status != MotorStatus_RUNNING) {
+        if (watchDogFlag)
+        { break; }
+    }
+    MotorStatusCheckInterruptFlag = 0;
+    HAL_TIM_Base_Stop_IT(&htim3);
+    HAL_TIM_Base_Stop(&htim3);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+    if (watchDogFlag) {
+        Ir2104_close_method(IR2104_0);
+        Ir2104_close_method(IR2104_1);
+        while (1) {}
+    }
+    else {
+        while (motor.status != MotorStatus_STOPPED) {}
+    }
 }
 
 void Motor_start_method(void) {
     Ir2104_open_method(IR2104_0);
     Ir2104_open_method(IR2104_1);
     motor.gear = MotorGear_GEAR3;
-    Pid_r_setter(&motor.pid, motor.gear);
+    Pid_r_setter(&motor.pid, gearAimRpmList[motor.gear]);
     Pid_start_method(&motor.pid);
-    // 启动编码器  TODO
 }
 
 void Motor_stop_method(void) {
+    Pid_stop_method(&motor.pid);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-    Pid_stop_method(&motor.pid);
-    // 编码器监测是否停止 可以堵塞主线程  TODO
+    while (motor.status != MotorStatus_STOPPED) {}
 }
 
 void Motor_updateGear_method(void) {
-    Pid_r_setter(&motor.pid, motor.gear);
+    Pid_r_setter(&motor.pid, gearAimRpmList[motor.gear]);
 }
 
 void Motor_changeDirection_method(void) {
     Motor_stop_method();
-    // 停稳后return  TODO
     motor.direction = motor.direction == MotorDirection_Right ? MotorDirection_Left : MotorDirection_Right;
+    Motor_start_method();
 }
 
-void Motor_pwmOutPut_method(uint16_t pwm) {  // TODO PID传入参数之一
+static void Motor_pwmOutput_method(uint16_t pwm) {
     if (motor.direction == MotorDirection_Right) {
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, pwm);
     }
@@ -101,14 +147,31 @@ uint16_t Motor_motorPwm_getter(void) {
 
 // ---------------Setter---------------
 void Motor_motorStatus_setter(MotorStatus status) {
+    if (motor.status == MotorStatus_RUNNING && status == MotorStatus_STOPPED_DEBOUNCE) {
+        motorLockedFlag = 1;
+    }
+    else if (motorLockedFlag && status == MotorStatus_STOPPED) {
+        motorLockedFlag = 0;
+        Motor_stop_method();
+    }
+    else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
+        motorLockedFlag = 0;
+    }
     motor.status = status;
 }
 
-void Motor_motorDirection_setter(MotorGear gear) {
+void Motor_motorGear_setter(MotorGear gear) {
     motor.gear = gear;
     Motor_updateGear_method();
 }
 
-void Motor_motorGear_setter(MotorDirection direction) {
+void Motor_motorDirection_setter(MotorDirection direction) {
     motor.direction = direction;
+}
+
+// ---------------interruptCallFunction---------------
+void Motor_TIM3_interruptCallFunction(void) {
+    if (MotorStatusCheckInterruptFlag) {
+        watchDogFlag = 1;
+    }
 }

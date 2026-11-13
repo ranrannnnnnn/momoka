@@ -6,10 +6,12 @@
 
 static void ArgListener_registerForGetter_method(getterFunction func, char* argName, uint8_t len);
 static uint16_t ArgListener_getDataForGetter_method(const ArgListen* listen);
+static uint16_t ___Motor_motorDirection_getter(void);
 
-// ---------------Args---------------
+// ---------------Args---------------c
 static char argName_rpm[3] = {'R', 'P', 'M'};
 static char argName_pwm[3] = {'P', 'W', 'M'};
+static char argName_direction[3] = {'D', 'I', 'T'};
 
 static ArgListen agrsManagerList[ARGSNUM];
 static uint8_t cnt = 0;
@@ -17,6 +19,8 @@ static uint8_t cnt = 0;
 // ---------------Init---------------
 void ArgListener_init(void) {
     ArgListener_registerForGetter_method(Motor_motorPwm_getter, argName_rpm, 3);
+    ArgListener_registerForGetter_method(___Motor_motorDirection_getter, argName_direction, 3);
+
     // rpm TODO
     cnt = 0;
     for (uint8_t i = 0; i < ARGSNUM; i++) {
@@ -25,6 +29,10 @@ void ArgListener_init(void) {
 }
 
 // ---------------Method---------------
+static uint16_t ___Motor_motorDirection_getter(void) {
+    return (uint16_t)Motor_motorDirection_getter();
+}
+
 static void ArgListener_registerForGetter_method(getterFunction func, char* argName, uint8_t len) {
     agrsManagerList[cnt].ptr = (uint32_t)func;
     agrsManagerList[cnt].argName.ptr = argName;

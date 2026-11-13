@@ -140,12 +140,20 @@ void Key_keyStatus_setter(Key *self, uint8_t status) {
 
 // ---------------CallbackFunction---------------
 static void Key_pressedHandle_key0(void) {
+    if (Motor_motorStatus_getter() == MotorStatus_STOPPED) {
+        Motor_start_method();
+    }
+    else if (Motor_motorStatus_getter() == MotorStatus_RUNNING) {
+        Motor_stop_method();
+    }
 }
 
 static void Key_pressedHandle_key1(void) {
+    Motor_motorGear_setter(Motor_motorGear_getter() + 1 > 2 ? MotorGear_GEAR3 : Motor_motorGear_getter()  + 1);
 }
 
 static void Key_pressedHandle_key2(void) {
+    Motor_changeDirection_method();
 }
 
 static void Key_releasedHandle_key0(void) {

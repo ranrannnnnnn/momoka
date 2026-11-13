@@ -6,17 +6,15 @@
 
 typedef enum {
     MotorStatus_RUNNING = 0U,
-    MotorStatus_LOCKED_DEBOUNCE,
-    MotorStatus_LOCKED,
-    MotorStatus_BRAKE,
+    MotorStatus_RUNNING_DEBOUNCE,
     MotorStatus_STOPPED_DEBOUNCE,
-    MotorStatus_STOPPED,
+    MotorStatus_STOPPED
 }MotorStatus;
 
 typedef enum {
-    MotorGear_GEAR3 = 300U,
-    MotorGear_GEAR2 = 200U,
-    MotorGear_GEAR1 = 150U
+    MotorGear_GEAR3 = 0U,
+    MotorGear_GEAR2,
+    MotorGear_GEAR1
 }MotorGear;
 
 typedef enum {
@@ -45,5 +43,5 @@ MotorGear Motor_motorGear_getter(void);
 MotorDirection Motor_motorDirection_getter(void);
 uint16_t Motor_motorPwm_getter(void);
 void Motor_motorStatus_setter(MotorStatus motorStatus);
-void Motor_motorDirection_setter(MotorGear motorGear);
-void Motor_motorGear_setter(MotorDirection motorDirection);
+void Motor_motorDirection_setter(MotorDirection direction);
+void Motor_motorGear_setter(MotorGear gear);
