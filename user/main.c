@@ -4,6 +4,8 @@
 #include "hardware/led/led.h"
 #include "hardware/key/key.h"
 #include "hardware/oled/oled.h"
+#include "hardware/motor/motor.h"
+#include "common/args_listener/args_listener.h"
 
 // hardware
 Key key0;
@@ -12,11 +14,18 @@ Key key2;
 
 void hardware_init(void) {
     LED_on_method(LED0);
-    Key_hardwareInit();
     Key_init(&key0, KeyType_KEY0);
     Key_init(&key1, KeyType_KEY1);
     Key_init(&key2, KeyType_KEY2);
+
     OLED_Init();
+    Motor_init();
+    Motor_harwareInit();
+    Key_hardwareInit();
+    Pid_hardwareInit();
+    ArgListener_init();
+    Key_hardwareInit();
+
 }
 
 void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或清理工作
@@ -25,9 +34,7 @@ void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或�
 
 void initComplete(void) {
     LED_on_method(LED1);
-
-
-
+    Motor_statusCheck_method();
     LED_off_method(LED0);
 }
 

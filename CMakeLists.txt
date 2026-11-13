@@ -59,6 +59,9 @@ add_executable(${CMAKE_PROJECT_NAME}
         user/connectivity/i2c/i2c.h
         user/common/string.c
         user/common/string.h
+        user/hardware/oled/fortLib.h
+        user/hardware/oled/oled.c
+        user/hardware/oled/oled.h
 )
 
 # Add STM32CubeMX generated sources

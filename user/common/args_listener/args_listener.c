@@ -18,7 +18,7 @@ static uint8_t cnt = 0;
 
 // ---------------Init---------------
 void ArgListener_init(void) {
-    ArgListener_registerForGetter_method(Motor_motorPwm_getter, argName_rpm, 3);
+    ArgListener_registerForGetter_method(Motor_motorPwm_getter, argName_pwm, 3);
     ArgListener_registerForGetter_method(___Motor_motorDirection_getter, argName_direction, 3);
 
     // rpm TODO

@@ -45,3 +45,4 @@ uint16_t Motor_motorPwm_getter(void);
 void Motor_motorStatus_setter(MotorStatus motorStatus);
 void Motor_motorDirection_setter(MotorDirection direction);
 void Motor_motorGear_setter(MotorGear gear);
+void Motor_TIM3_interruptCallFunction(void);

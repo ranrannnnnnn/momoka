@@ -129,7 +129,7 @@ static void OLED_showChar_method(const uint8_t line, const uint8_t column, const
   * @param  string 要显示的字符串，范围：ASCII可见字符
   * @retval 无
   */
-void OLED_showString_method(const uint8_t line, const uint8_t column, const String* string)
+void OLED_showString_method(const uint8_t line, const uint8_t column, String* string)
 {
 	for (uint8_t i = 0; i < String_length_getter(string); i++)
 	{

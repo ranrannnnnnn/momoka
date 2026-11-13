@@ -15,7 +15,7 @@ static uint16_t gearAimRpmList[3] = {150, 200, 300};
 volatile static uint8_t MotorStatusCheckInterruptFlag = 0;
 volatile static uint8_t watchDogFlag = 0;
 static uint8_t motorLockedFlag = 0;
-static Motor motor;
+static volatile Motor motor;
 // ---------------Init---------------
 void Motor_init(void) {
     // 初始化PID实例
@@ -65,9 +65,7 @@ void Motor_statusCheck_method(void) {
         Ir2104_close_method(IR2104_1);
         while (1) {}
     }
-    else {
-        while (motor.status != MotorStatus_STOPPED) {}
-    }
+    while (motor.status != MotorStatus_STOPPED) {}
     __HAL_TIM_CLEAR_IT(&htim1, TIM_FLAG_UPDATE);
     HAL_TIM_Base_Start_IT(&htim3);
     HAL_TIM_Base_Start(&htim3);
@@ -88,9 +86,7 @@ void Motor_statusCheck_method(void) {
         Ir2104_close_method(IR2104_1);
         while (1) {}
     }
-    else {
-        while (motor.status != MotorStatus_STOPPED) {}
-    }
+    while (motor.status != MotorStatus_STOPPED) {}
 }
 
 void Motor_start_method(void) {
@@ -121,8 +117,10 @@ void Motor_changeDirection_method(void) {
 static void Motor_pwmOutput_method(uint16_t pwm) {
     if (motor.direction == MotorDirection_Right) {
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, pwm);
+        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
     }
     else {
+        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
         __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, pwm);
     }
     motor.pwm = pwm;
