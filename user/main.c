@@ -22,12 +22,14 @@ void hardware_init(void) {
 
     Motor_harwareInit();
     Pid_hardwareInit();
-    ArgListener_init();
+
     Key_hardwareInit();
     Encoder_hardwareInit();
     I2C_hardwareInit_method();
 
     OLED_Init();
+
+    ArgListener_init();
     Motor_init();
 }
 
@@ -38,9 +40,9 @@ void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或�
 }
 
 void initComplete(void) {
-    LED_on_method(LED1);
     // Motor_statusCheck_method();
     LED_off_method(LED0);
+    LED_on_method(LED1);
 }
 
 int appMain(void) {

@@ -15,7 +15,7 @@ static uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
 
 static volatile uint8_t MotorStatusCheckInterruptFlag = 0;
 static volatile uint8_t watchDogFlag = 0;
-static volatile  uint8_t motorLockedFlag = 0;
+// static volatile  uint8_t motorLockedFlag = 0;
 static Motor motor;
 // ---------------Init---------------
 void Motor_init(void) {
@@ -101,6 +101,7 @@ void Motor_stop_method(void) {
     Pid_stop_method(&motor.pid);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
+    motor.pwm = 0;
     htim3.Init.Period = 49999;
     htim3.Init.Prescaler = 7199;
     HAL_TIM_Base_Init(&htim3);
@@ -158,17 +159,17 @@ uint16_t Motor_motorPwm_getter(void) {
 
 // ---------------Setter---------------
 void Motor_motorStatus_setter(MotorStatus status) {
-    if (motor.status == MotorStatus_RUNNING && status == MotorStatus_STOPPED_DEBOUNCE) {
-        motorLockedFlag = 1;
-    }
-    else if (motorLockedFlag && status == MotorStatus_STOPPED) {
-        motorLockedFlag = 0;
-        Motor_stop_method();
-    }
-    else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
-        motorLockedFlag = 0;
-    }
     motor.status = status;
+    // if (motor.status == MotorStatus_RUNNING && status == MotorStatus_STOPPED_DEBOUNCE) {
+    //     motorLockedFlag = 1;
+    // }
+    // else if (motorLockedFlag && status == MotorStatus_STOPPED) {
+    //     motorLockedFlag = 0;
+    //     Motor_stop_method();
+    // }
+    // else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
+    //     motorLockedFlag = 0;
+    // }
 }
 
 void Motor_motorGear_setter(MotorGear gear) {
