@@ -3,7 +3,7 @@
 #include "../../hardware/motor/motor.h"
 #include "../../hardware/motor/motor_encoder.h"
 
-#define ARGSNUM 2
+#define ARGSNUM 3
 
 static void ArgListener_registerForGetter_method(getterFunction func, char* argName, uint8_t len);
 static uint16_t ArgListener_getDataForGetter_method(const ArgListen* listen);
@@ -24,8 +24,6 @@ void ArgListener_init(void) {
     ArgListener_registerForGetter_method(Motor_motorPwm_getter, argName_pwm, 3);
     ArgListener_registerForGetter_method(___Motor_motorDirection_getter, argName_direction, 3);
     ArgListener_registerForGetter_method(___Motor_motorRpm_getter, argName_rpm, 3);
-
-    // rpm TODO
     cnt = 0;
     for (uint8_t i = 0; i < ARGSNUM; i++) {
         OLED_showString_method(i + 1, 1, &agrsManagerList[i].argName);

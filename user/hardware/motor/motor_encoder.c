@@ -157,11 +157,12 @@ uint8_t Encoder_sampleUpdateFlag_getter(void) {
 
 void Encoder_TIM4_interruptCallFunction(void) {
     sampleCnt2++;
-    if (sampleCnt2 > 10) {
+    if (sampleCnt2 > 9) {
         cnt_TIM2 = (int16_t)__HAL_TIM_GET_COUNTER(&htim2);
-        rpm = MathBase_absoluteValue_tool(cnt_TIM2) / 7 * 100;
+        rpm = (float)MathBase_absoluteValue_tool(cnt_TIM2) / ((float)DDR * 4.0f * 10.0f) * 60000.0f;
         Encoder_clearTim2Counter_method();
         Encoder_motorStatusUpdate_method();
+        sampleCnt2 = 0;
     }
 }
 

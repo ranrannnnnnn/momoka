@@ -47,6 +47,7 @@
         }\
         mathnumberLengthCnt++;\
     }\
+    if (mathnumberLengthCnt == 0) { mathnumberLengthCnt = 1; }\
     mathnumberLengthCnt;\
 })
 

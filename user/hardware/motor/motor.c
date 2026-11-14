@@ -37,8 +37,8 @@ void Motor_harwareInit(void) {
 
 void Motor_hardwareFinalize(void) {
     HAL_TIM_Base_Start(&htim1);
-    HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_1);
-    HAL_TIM_OC_Start(&htim1, TIM_CHANNEL_2);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 }
 
 // ---------------Method---------------
@@ -101,7 +101,20 @@ void Motor_stop_method(void) {
     Pid_stop_method(&motor.pid);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
-    while (motor.status != MotorStatus_STOPPED) {}
+    htim3.Init.Period = 49999;
+    htim3.Init.Prescaler = 7199;
+    HAL_TIM_Base_Init(&htim3);
+    MotorStatusCheckInterruptFlag = 1;
+    HAL_TIM_Base_Start_IT(&htim3);
+    __HAL_TIM_CLEAR_IT(&htim1, TIM_FLAG_UPDATE);
+    HAL_TIM_Base_Start(&htim3);
+    while (motor.status != MotorStatus_STOPPED) {
+        if (watchDogFlag)
+            { watchDogFlag = 0; break; }
+    }
+    MotorStatusCheckInterruptFlag = 0;
+    HAL_TIM_Base_Stop_IT(&htim3);
+    HAL_TIM_Base_Stop(&htim3);
 }
 
 void Motor_updateGear_method(void) {

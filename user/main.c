@@ -20,25 +20,26 @@ void hardware_init(void) {
     Key_init(&key1, KeyType_KEY1);
     Key_init(&key2, KeyType_KEY2);
 
-    OLED_Init();
-    Motor_init();
-
     Motor_harwareInit();
     Pid_hardwareInit();
     ArgListener_init();
     Key_hardwareInit();
     Encoder_hardwareInit();
     I2C_hardwareInit_method();
+
+    OLED_Init();
+    Motor_init();
 }
 
 void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或清理工作
     Key_hardwareFinalize();
     Motor_hardwareFinalize();
+    Encoder_hardwareFinalize();
 }
 
 void initComplete(void) {
     LED_on_method(LED1);
-    Motor_statusCheck_method();
+    // Motor_statusCheck_method();
     LED_off_method(LED0);
 }
 
