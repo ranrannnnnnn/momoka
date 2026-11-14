@@ -28,3 +28,4 @@ void Key_hardwareFinalize(void);
 void Key_updateKeyStatus_method(Key* self);
 void Key_keyStatus_setter(Key *self, uint8_t status);
 void Key_TIM4_interruptCallFunction(void);
+void Key_mainLoopCallFunction(void);

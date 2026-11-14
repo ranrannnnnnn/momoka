@@ -49,3 +49,11 @@
     }\
     mathnumberLengthCnt;\
 })
+
+#define MathBase_absoluteValue_tool(a) ({\
+    __typeof__(a) mathAbsoluteValue = a;\
+    if (mathAbsoluteValue < 0) {\
+        mathAbsoluteValue = -mathAbsoluteValue;\
+    }\
+    mathAbsoluteValue;\
+})

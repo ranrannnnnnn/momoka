@@ -29,6 +29,10 @@ static const uint16_t GPIO_PIN_X[] = {
 static Key* keyManagerList[KEYNUMBER] = {NULL};
 static uint8_t timerSampleCount = 0;
 
+static volatile uint8_t Key_pressedHandle_key0_flag = 0;
+static volatile uint8_t Key_pressedHandle_key1_flag = 0;
+static volatile uint8_t Key_pressedHandle_key2_flag = 0;
+
 // ---------------Init---------------
 void Key_init(Key* self, KeyType_enum keyType) {
     self->keyType = keyType;
@@ -38,6 +42,7 @@ void Key_init(Key* self, KeyType_enum keyType) {
     for (uint8_t i = 0; i < KEYNUMBER; i++) {
         if (keyManagerList[i] == NULL) {
             keyManagerList[i] = self;
+            break;
         }
     }
 }
@@ -140,20 +145,16 @@ void Key_keyStatus_setter(Key *self, uint8_t status) {
 
 // ---------------CallbackFunction---------------
 static void Key_pressedHandle_key0(void) {
-    if (Motor_motorStatus_getter() == MotorStatus_STOPPED) {
-        Motor_start_method();
-    }
-    else if (Motor_motorStatus_getter() == MotorStatus_RUNNING) {
-        Motor_stop_method();
-    }
+    Key_pressedHandle_key0_flag = 1;
 }
 
 static void Key_pressedHandle_key1(void) {
-    Motor_motorGear_setter(Motor_motorGear_getter() + 1 > 2 ? MotorGear_GEAR3 : Motor_motorGear_getter()  + 1);
+    Key_pressedHandle_key1_flag = 1;
+
 }
 
 static void Key_pressedHandle_key2(void) {
-    Motor_changeDirection_method();
+    Key_pressedHandle_key2_flag = 1;
 }
 
 static void Key_releasedHandle_key0(void) {
@@ -175,5 +176,26 @@ void Key_TIM4_interruptCallFunction(void) {
     for (uint8_t i = 0; i < KEYNUMBER; i++) {
         if (keyManagerList[i] == NULL) { continue; }
         Key_updateKeyStatus_method(keyManagerList[i]);
+    }
+}
+
+// ---------------mainLoopCallFunction---------------
+void Key_mainLoopCallFunction(void) {
+    if (Key_pressedHandle_key0_flag) {
+        if (Motor_motorStatus_getter() == MotorStatus_STOPPED) {
+            Motor_start_method();
+        }
+        else if (Motor_motorStatus_getter() == MotorStatus_RUNNING) {
+            Motor_stop_method();
+        }
+        Key_pressedHandle_key0_flag = 0;
+    }
+    if (Key_pressedHandle_key1_flag) {
+        Motor_motorGear_setter(Motor_motorGear_getter() + 1 > 2 ? MotorGear_GEAR3 : Motor_motorGear_getter()  + 1);
+        Key_pressedHandle_key1_flag = 0;
+    }
+    if (Key_pressedHandle_key2_flag) {
+        Motor_changeDirection_method();
+        Key_pressedHandle_key2_flag = 0;
     }
 }

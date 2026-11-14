@@ -1,8 +1,9 @@
 #include "motor.h"
-
 #include "motor_ir2104.h"
-#include "stm32f1xx_hal.h"
+#include "motor_encoder.h"
 #include "../../common/pid/pid.h"
+
+#include <main.h>
 
 static void Motor_pwmOutput_method(uint16_t pwm);
 
@@ -10,21 +11,20 @@ static void Motor_pwmOutput_method(uint16_t pwm);
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 
-static uint16_t gearAimRpmList[3] = {150, 200, 300};
+static uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
 
-volatile static uint8_t MotorStatusCheckInterruptFlag = 0;
-volatile static uint8_t watchDogFlag = 0;
-static uint8_t motorLockedFlag = 0;
-static volatile Motor motor;
+static volatile uint8_t MotorStatusCheckInterruptFlag = 0;
+static volatile uint8_t watchDogFlag = 0;
+static volatile  uint8_t motorLockedFlag = 0;
+static Motor motor;
 // ---------------Init---------------
 void Motor_init(void) {
     // 初始化PID实例
     // 占空比15% - 85%
-    Pid_init(&motor.pid, 1, 0, 2, 6, 0.05f, 3059, 539, 50, Motor_pwmOutput_method, ..., Motor_motorPwm_getter);
+    Pid_init(&motor.pid, 10, 0, 2, 6, 0.05f, 3059, 539, 50,
+        Motor_pwmOutput_method, Encoder_rpm_getter, Motor_motorPwm_getter);
     motor.direction = MotorDirection_Right;
     motor.status = MotorStatus_STOPPED;
-
-    // 初始化编码器 TODO
 }
 
 void Motor_harwareInit(void) {

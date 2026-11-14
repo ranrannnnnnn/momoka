@@ -6,6 +6,8 @@
 #include "hardware/oled/oled.h"
 #include "hardware/motor/motor.h"
 #include "common/args_listener/args_listener.h"
+#include "hardware/motor/motor_encoder.h"
+#include "connectivity/i2c/i2c.h"
 
 // hardware
 Key key0;
@@ -20,16 +22,18 @@ void hardware_init(void) {
 
     OLED_Init();
     Motor_init();
+
     Motor_harwareInit();
-    Key_hardwareInit();
     Pid_hardwareInit();
     ArgListener_init();
     Key_hardwareInit();
-
+    Encoder_hardwareInit();
+    I2C_hardwareInit_method();
 }
 
 void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或清理工作
     Key_hardwareFinalize();
+    Motor_hardwareFinalize();
 }
 
 void initComplete(void) {
@@ -44,5 +48,7 @@ int appMain(void) {
     initComplete();
 
     while (1) {
+        Key_mainLoopCallFunction();
+        ArgListner_mainLoopFunction();
     }
 }
