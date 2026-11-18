@@ -162,7 +162,7 @@ void OLED_clear_method(void)
   */
 void OLED_showNum_method(uint8_t line, uint8_t column, uint32_t number)
 {
-	uint8_t length = MathBase_numberLength_tool(number);
+	uint8_t length = 6;
 	for (uint8_t i = 0; i < length; i++)
 	{
 		OLED_showChar_method(line, column + i, number / MathBase_pow_tool(10, length - i - 1) % 10 + '0');
