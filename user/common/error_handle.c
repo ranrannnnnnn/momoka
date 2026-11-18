@@ -3,7 +3,14 @@
 #include "../hardware/led/led.h"
 #include "../hardware/oled/oled.h"
 
+#include <main.h>
+
 uint8_t errorRaise = 0;
+
+extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim3;
+extern TIM_HandleTypeDef htim4;
 
 // ---------------Method---------------
 void ErrorHandle_raise_method(ErrorCode errorCode) {
@@ -25,4 +32,12 @@ void ErrorHandle_raise_method(ErrorCode errorCode) {
             OLED_showStringForCharArray_method(0, 1, "MOTOR_LOCKED");
         }
     }
+    HAL_TIM_Base_Stop(&htim1);
+    HAL_TIM_Base_Stop(&htim2);
+    HAL_TIM_Base_Stop(&htim3);
+    HAL_TIM_Base_Stop(&htim4);
+    HAL_TIM_OC_Stop(&htim1, TIM_CHANNEL_1 | TIM_CHANNEL_2 | TIM_CHANNEL_3 | TIM_CHANNEL_4);
+    HAL_TIM_OC_Stop(&htim2, TIM_CHANNEL_1 | TIM_CHANNEL_2 | TIM_CHANNEL_3 | TIM_CHANNEL_4);
+    HAL_TIM_OC_Stop(&htim3, TIM_CHANNEL_1 | TIM_CHANNEL_2 | TIM_CHANNEL_3 | TIM_CHANNEL_4);
+    HAL_TIM_OC_Stop(&htim4, TIM_CHANNEL_1 | TIM_CHANNEL_2 | TIM_CHANNEL_3 | TIM_CHANNEL_4);
 }

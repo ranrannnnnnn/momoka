@@ -13,7 +13,7 @@ static void Motor_pwmOutput_method(uint16_t pwm);
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 
-static volatile uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
+static uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
 
 static volatile uint8_t MotorStatusCheckInterruptFlag = 0;
 static volatile uint8_t watchDogFlag = 0;
@@ -27,6 +27,7 @@ void Motor_init(void) {
         Motor_pwmOutput_method, Encoder_rpm_getter, Motor_motorPwm_getter);
     motor.direction = MotorDirection_Right;
     motor.status = MotorStatus_STOPPED;
+    motor.gear = MotorGear_GEAR3;
 }
 
 void Motor_harwareInit(void) {
@@ -50,6 +51,7 @@ void Motor_statusCheck_method(void) {
     HAL_TIM_Base_Start(&htim3);
     Ir2104_open_method(IR2104_0);
     Ir2104_open_method(IR2104_1);
+    motor.direction = MotorDirection_Right;
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 1500);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
     MotorStatusCheckInterruptFlag = 1;
@@ -66,11 +68,13 @@ void Motor_statusCheck_method(void) {
         Ir2104_close_method(IR2104_0);
         Ir2104_close_method(IR2104_1);
         ErrorHandle_raise_method(1);
+        return;
     }
     while (motor.status != MotorStatus_STOPPED) {}
     __HAL_TIM_CLEAR_IT(&htim1, TIM_FLAG_UPDATE);
     HAL_TIM_Base_Start_IT(&htim3);
     HAL_TIM_Base_Start(&htim3);
+    motor.direction = MotorDirection_Left;
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 1500);
     MotorStatusCheckInterruptFlag = 1;
@@ -87,14 +91,15 @@ void Motor_statusCheck_method(void) {
         Ir2104_close_method(IR2104_0);
         Ir2104_close_method(IR2104_1);
         ErrorHandle_raise_method(1);
+        return;
     }
     while (motor.status != MotorStatus_STOPPED) {}
+    motor.direction = MotorDirection_Right;
 }
 
 void Motor_start_method(void) {
     Ir2104_open_method(IR2104_0);
     Ir2104_open_method(IR2104_1);
-    motor.gear = MotorGear_GEAR3;
     Pid_r_setter(&motor.pid, gearAimRpmList[motor.gear]);
     Pid_start_method(&motor.pid);
 }
@@ -125,9 +130,11 @@ void Motor_updateGear_method(void) {
 }
 
 void Motor_changeDirection_method(void) {
-    Motor_stop_method();
-    motor.direction = motor.direction == MotorDirection_Right ? MotorDirection_Left : MotorDirection_Right;
-    Motor_start_method();
+    if (motor.status == MotorStatus_RUNNING) {
+        Motor_stop_method();
+        motor.direction = motor.direction == MotorDirection_Right ? MotorDirection_Left : MotorDirection_Right;
+        Motor_start_method();
+    }
 }
 
 static void Motor_pwmOutput_method(uint16_t pwm) {
@@ -168,7 +175,7 @@ void Motor_motorStatus_setter(MotorStatus status) {
     else if (motorLockedFlag && status == MotorStatus_STOPPED) {
         motorLockedFlag = 0;
         Motor_stop_method();
-        ErrorHandle_raise_method()
+        ErrorHandle_raise_method();
     }
     else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
         motorLockedFlag = 0;

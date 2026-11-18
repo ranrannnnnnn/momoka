@@ -22,7 +22,7 @@ static volatile uint8_t cnt = 0;
 volatile static uint16_t oledUpdateFlag = 0;
 
 extern volatile uint8_t errorRaise;
-
+extern uint16_t gearAimRpmList[3];
 // ---------------Init---------------
 void ArgListener_init(void) {
     ArgListener_registerForGetter_method(Motor_motorPwm_getter, argName_pwm, 3);
@@ -45,7 +45,7 @@ static uint16_t ___Motor_motorRpm_getter(void) {
 }
 
 static uint16_t ___Motor_motorAim_getter(void) {
-    return (uint16_t)(Motor_motorGear_getter() / 50);
+    return (uint16_t)(gearAimRpmList[Motor_motorGear_getter()] / 50);
 }
 
 

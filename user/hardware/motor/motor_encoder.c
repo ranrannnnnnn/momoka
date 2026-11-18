@@ -14,8 +14,9 @@ static volatile uint8_t sampleCnt = 0;
 static volatile  uint8_t sampleCnt1 = 0;
 static volatile uint8_t sampleCnt2 = 0;
 
-static float rpm = 0.0f;
-static int16_t cnt_TIM2 = 0;
+static volatile float rpm = 0.0f;
+static volatile int16_t cnt_TIM2 = 0;
+static uint8_t errorCnt = 0;
 
 // static uint8_t dwtBeforeFlag = 0;
 // static uint32_t dwtBefore;
@@ -59,12 +60,20 @@ static inline void Encoder_clearTim2Counter_method(void) {
 static void Encoder_motorStatusUpdate_method(void) {
     if (cnt_TIM2 < 0) {
         if (Motor_motorDirection_getter() != MotorDirection_Left) {
-            ErrorHandle_raise_method(0);
+            errorCnt++;
+            if (errorCnt >= 3) {
+                ErrorHandle_raise_method(0);
+            }
+            errorCnt = 0;
         }
     }
     else if (cnt_TIM2 > 0) {
         if (Motor_motorDirection_getter() != MotorDirection_Right) {
-            ErrorHandle_raise_method(0);
+            errorCnt++;
+            if (errorCnt >= 3) {
+                ErrorHandle_raise_method(0);
+            }
+            errorCnt = 0;
         }
     }
     switch (Motor_motorStatus_getter()) {
@@ -88,7 +97,7 @@ static void Encoder_motorStatusUpdate_method(void) {
                 break;
             }
             sampleCnt++;
-            if (sampleCnt >= 2) {
+            if (sampleCnt >= 20) {
                 sampleCnt = 0;
                 sampleCnt1 = 0;
                 Motor_motorStatus_setter(MotorStatus_RUNNING);
