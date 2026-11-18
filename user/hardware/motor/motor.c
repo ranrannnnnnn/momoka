@@ -13,7 +13,7 @@ static void Motor_pwmOutput_method(uint16_t pwm);
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 
-static uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
+uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
 
 static volatile uint8_t MotorStatusCheckInterruptFlag = 0;
 static volatile uint8_t watchDogFlag = 0;
