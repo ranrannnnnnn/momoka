@@ -2,7 +2,6 @@
 #include "motor_ir2104.h"
 #include "motor_encoder.h"
 #include "../../common/pid/pid.h"
-#include "../led/led.h"
 
 #include <main.h>
 
@@ -18,7 +17,7 @@ static volatile uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
 
 static volatile uint8_t MotorStatusCheckInterruptFlag = 0;
 static volatile uint8_t watchDogFlag = 0;
-// static volatile  uint8_t motorLockedFlag = 0;
+static volatile  uint8_t motorLockedFlag = 0;
 static Motor motor;
 // ---------------Init---------------
 void Motor_init(void) {
@@ -163,16 +162,17 @@ uint16_t Motor_motorPwm_getter(void) {
 // ---------------Setter---------------
 void Motor_motorStatus_setter(MotorStatus status) {
     motor.status = status;
-    // if (motor.status == MotorStatus_RUNNING && status == MotorStatus_STOPPED_DEBOUNCE) {
-    //     motorLockedFlag = 1;
-    // }
-    // else if (motorLockedFlag && status == MotorStatus_STOPPED) {
-    //     motorLockedFlag = 0;
-    //     Motor_stop_method();
-    // }
-    // else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
-    //     motorLockedFlag = 0;
-    // }
+    if (motor.status == MotorStatus_RUNNING && status == MotorStatus_STOPPED_DEBOUNCE) {
+        motorLockedFlag = 1;
+    }
+    else if (motorLockedFlag && status == MotorStatus_STOPPED) {
+        motorLockedFlag = 0;
+        Motor_stop_method();
+        ErrorHandle_raise_method()
+    }
+    else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
+        motorLockedFlag = 0;
+    }
 }
 
 void Motor_motorGear_setter(MotorGear gear) {
