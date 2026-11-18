@@ -14,10 +14,6 @@ static Pid* pidList[PIDNUM];
 
 // ---------------Init---------------
 void Pid_hardwareInit(void) {
-    // 使用TIM6作为采样周期计时器 周期1ms
-    __HAL_TIM_CLEAR_FLAG(&htim4, TIM_FLAG_UPDATE);
-    HAL_TIM_Base_Start_IT(&htim4);
-
     // 初始化变量
     for (uint8_t i = 0; i < PIDNUM; i++) {
         pidSampleCounter[i] = 0;
@@ -26,6 +22,9 @@ void Pid_hardwareInit(void) {
 }
 
 void Pid_hardwareInitFinalize(void) {
+    // 使用TIM6作为采样周期计时器 周期1ms
+    __HAL_TIM_CLEAR_FLAG(&htim4, TIM_FLAG_UPDATE);
+    HAL_TIM_Base_Start_IT(&htim4);
     HAL_TIM_Base_Start(&htim4);
 }
 

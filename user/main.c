@@ -17,12 +17,11 @@ Key key2;
 void hardware_init(void) {
     Key_init(&key0, KeyType_KEY0);
     Key_init(&key1, KeyType_KEY1);
-    Key_init(&key2, KeyType_KEY2);
+    // Key_init(&key2, KeyType_KEY2);
 
     Motor_harwareInit();
     Pid_hardwareInit();
 
-    Key_hardwareInit();
     Encoder_hardwareInit();
     I2C_hardwareInit_method();
 

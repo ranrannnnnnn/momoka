@@ -23,7 +23,7 @@ typedef enum {
 }MotorDirection;
 
 typedef struct {
-    volatile MotorStatus status;
+    MotorStatus status;
     volatile MotorDirection direction;
     volatile MotorGear gear;
     Pid pid;

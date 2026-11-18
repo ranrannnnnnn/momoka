@@ -3,7 +3,7 @@
 #include "../../hardware/motor/motor.h"
 #include "../../hardware/motor/motor_encoder.h"
 
-#define ARGSNUM 5
+#define ARGSNUM 4
 
 static void ArgListener_registerForGetter_method(getterFunction func, char* argName, uint8_t len);
 static uint16_t ArgListener_getDataForGetter_method(const ArgListen* listen);
@@ -19,7 +19,7 @@ static char argName_aim[3] = {'A', 'I', 'M'};
 
 static ArgListen agrsManagerList[ARGSNUM];
 static volatile uint8_t cnt = 0;
-volatile static uint16_t oledUpdateFlag = 0;
+volatile static uint16_t oledUpdateFlag = 1;
 
 extern volatile uint8_t errorRaise;
 extern uint16_t gearAimRpmList[3];
@@ -31,7 +31,7 @@ void ArgListener_init(void) {
     ArgListener_registerForGetter_method(___Motor_motorRpm_getter, argName_rpm, 3);
     cnt = 0;
     for (uint8_t i = 0; i < ARGSNUM; i++) {
-        OLED_showString_method(i, 1, &agrsManagerList[i].argName);
+        OLED_showString_method(i + 1, 1, &agrsManagerList[i].argName);
     }
 }
 
@@ -80,7 +80,7 @@ void ArgListner_mainLoopFunction(void) {
     if (oledUpdateFlag) {
         for (uint8_t i = 0; i < ARGSNUM; i++) {
             if (agrsManagerList[i].flag) {
-                OLED_showNum_method(i, agrsManagerList[i].argName.length + 2,
+                OLED_showNum_method(i + 1, agrsManagerList[i].argName.length + 2,
                     ArgListener_getDataForGetter_method(&agrsManagerList[i]));
             }
         }

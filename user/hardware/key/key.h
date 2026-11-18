@@ -23,7 +23,6 @@ typedef struct {
 }Key;
 
 void Key_init(Key *self, KeyType_enum keyType);
-void Key_hardwareInit(void);
 void Key_hardwareFinalize(void);
 void Key_updateKeyStatus_method(Key* self);
 void Key_keyStatus_setter(Key *self, uint8_t status);

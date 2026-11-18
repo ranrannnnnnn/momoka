@@ -47,12 +47,9 @@ void Key_init(Key* self, KeyType_enum keyType) {
     }
 }
 
-void Key_hardwareInit(void) {
-    __HAL_TIM_CLEAR_FLAG(&htim4, TIM_FLAG_UPDATE);
-    HAL_TIM_Base_Start_IT(&htim4);
-}
-
 void Key_hardwareFinalize(void) {
+    __HAL_TIM_CLEAR_FLAG(&htim4, TIM_FLAG_UPDATE);
+    HAL_TIM_Base_Start_IT(&htim4);  // 同时启动计时器
     HAL_TIM_Base_Start(&htim4);
 }
 
@@ -150,7 +147,6 @@ static void Key_pressedHandle_key0(void) {
 
 static void Key_pressedHandle_key1(void) {
     Key_pressedHandle_key1_flag = 1;
-
 }
 
 static void Key_pressedHandle_key2(void) {

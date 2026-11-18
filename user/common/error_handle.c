@@ -19,17 +19,17 @@ void ErrorHandle_raise_method(ErrorCode errorCode) {
     switch (errorCode) {
         case ENCODER_REVERSED: {
             OLED_clear_method();
-            OLED_showStringForCharArray_method(0, 1, "ENCODER_REVERSED");
+            OLED_showStringForCharArray_method(1, 1, "ENCODER_REVERSED");
             break;
         }
         case ENCODER_NOT_CONNECTED: {
             OLED_clear_method();
-            OLED_showStringForCharArray_method(0, 1, "ENCODER_NOT_CONNECTED");
+            OLED_showStringForCharArray_method(1, 1, "ENCODER_NOT_CONNECTED");
             break;
         }
         case MOTOR_LOCKED: {
             OLED_clear_method();
-            OLED_showStringForCharArray_method(0, 1, "MOTOR_LOCKED");
+            OLED_showStringForCharArray_method(1, 1, "MOTOR_LOCKED");
         }
     }
     __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
