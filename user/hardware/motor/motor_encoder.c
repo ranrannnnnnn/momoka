@@ -64,6 +64,8 @@ static void Encoder_motorStatusUpdate_method(void) {
             if (errorCnt >= 3) {
                 ErrorHandle_raise_method(0);
             }
+        }
+        else {
             errorCnt = 0;
         }
     }
@@ -73,6 +75,8 @@ static void Encoder_motorStatusUpdate_method(void) {
             if (errorCnt >= 3) {
                 ErrorHandle_raise_method(0);
             }
+        }
+        else {
             errorCnt = 0;
         }
     }

@@ -32,6 +32,8 @@ void ErrorHandle_raise_method(ErrorCode errorCode) {
             OLED_showStringForCharArray_method(0, 1, "MOTOR_LOCKED");
         }
     }
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 0);
     HAL_TIM_Base_Stop(&htim1);
     HAL_TIM_Base_Stop(&htim2);
     HAL_TIM_Base_Stop(&htim3);

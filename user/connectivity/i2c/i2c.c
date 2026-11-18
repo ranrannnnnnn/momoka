@@ -21,7 +21,7 @@ void I2C_hardwareInit_method(void) {
 // ---------------Method---------------
 static inline uint32_t I2C_3usDelay_method(void) {
     uint32_t t0 = DWT->CYCCNT;
-    while (DWT->CYCCNT - t0 < 60) {}
+    while (DWT->CYCCNT - t0 < 90) {}
 }
 
 static void I2C_startSingal_method(void)

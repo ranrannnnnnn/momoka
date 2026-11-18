@@ -168,18 +168,18 @@ uint16_t Motor_motorPwm_getter(void) {
 
 // ---------------Setter---------------
 void Motor_motorStatus_setter(MotorStatus status) {
-    motor.status = status;
     if (motor.status == MotorStatus_RUNNING && status == MotorStatus_STOPPED_DEBOUNCE) {
         motorLockedFlag = 1;
     }
     else if (motorLockedFlag && status == MotorStatus_STOPPED) {
         motorLockedFlag = 0;
         Motor_stop_method();
-        ErrorHandle_raise_method();
+        ErrorHandle_raise_method(2);
     }
     else if (motorLockedFlag && status == MotorStatus_RUNNING ) {
         motorLockedFlag = 0;
     }
+    motor.status = status;
 }
 
 void Motor_motorGear_setter(MotorGear gear) {
