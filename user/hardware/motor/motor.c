@@ -2,8 +2,11 @@
 #include "motor_ir2104.h"
 #include "motor_encoder.h"
 #include "../../common/pid/pid.h"
+#include "../led/led.h"
 
 #include <main.h>
+
+#include "../../common/error_handle.h"
 
 static void Motor_pwmOutput_method(uint16_t pwm);
 
@@ -11,7 +14,7 @@ static void Motor_pwmOutput_method(uint16_t pwm);
 extern TIM_HandleTypeDef htim1;
 extern TIM_HandleTypeDef htim3;
 
-static uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
+static volatile uint16_t gearAimRpmList[3] = {7500, 10000, 15000};
 
 static volatile uint8_t MotorStatusCheckInterruptFlag = 0;
 static volatile uint8_t watchDogFlag = 0;
@@ -63,7 +66,7 @@ void Motor_statusCheck_method(void) {
     if (watchDogFlag) {
         Ir2104_close_method(IR2104_0);
         Ir2104_close_method(IR2104_1);
-        while (1) {}
+        ErrorHandle_raise_method(1);
     }
     while (motor.status != MotorStatus_STOPPED) {}
     __HAL_TIM_CLEAR_IT(&htim1, TIM_FLAG_UPDATE);
@@ -84,7 +87,7 @@ void Motor_statusCheck_method(void) {
     if (watchDogFlag) {
         Ir2104_close_method(IR2104_0);
         Ir2104_close_method(IR2104_1);
-        while (1) {}
+        ErrorHandle_raise_method(1);
     }
     while (motor.status != MotorStatus_STOPPED) {}
 }

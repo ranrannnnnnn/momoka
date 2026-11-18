@@ -15,7 +15,6 @@ Key key1;
 Key key2;
 
 void hardware_init(void) {
-    LED_on_method(LED0);
     Key_init(&key0, KeyType_KEY0);
     Key_init(&key1, KeyType_KEY1);
     Key_init(&key2, KeyType_KEY2);
@@ -40,9 +39,8 @@ void hardware_initFinalize(void) {  // 初始化后调用 用于启动外设或�
 }
 
 void initComplete(void) {
-    // Motor_statusCheck_method();
-    LED_off_method(LED0);
-    LED_on_method(LED1);
+    Motor_statusCheck_method();
+    LED_on_method(LED0);
 }
 
 int appMain(void) {

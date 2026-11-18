@@ -63,6 +63,8 @@ add_executable(${CMAKE_PROJECT_NAME}
         user/hardware/oled/oled.c
         user/hardware/oled/oled.h
         user/hardware/oled/fortLib.c
+        user/common/error_handle.c
+        user/common/error_handle.h
 )
 
 # Add STM32CubeMX generated sources

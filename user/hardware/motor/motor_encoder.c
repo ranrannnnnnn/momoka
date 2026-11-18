@@ -5,6 +5,7 @@
 
 #include "motor.h"
 #include "../../common/math/math_base.h"
+#include "../../common/error_handle.h"
 
 // ---------------Args---------------
 extern TIM_HandleTypeDef htim2;
@@ -57,10 +58,14 @@ static inline void Encoder_clearTim2Counter_method(void) {
 
 static void Encoder_motorStatusUpdate_method(void) {
     if (cnt_TIM2 < 0) {
-        Motor_motorDirection_setter(MotorDirection_Left);
+        if (Motor_motorDirection_getter() != MotorDirection_Left) {
+            ErrorHandle_raise_method(0);
+        }
     }
     else if (cnt_TIM2 > 0) {
-        Motor_motorDirection_setter(MotorDirection_Right);
+        if (Motor_motorDirection_getter() != MotorDirection_Right) {
+            ErrorHandle_raise_method(0);
+        }
     }
     switch (Motor_motorStatus_getter()) {
         case MotorStatus_RUNNING: {

@@ -137,6 +137,15 @@ void OLED_showString_method(const uint8_t line, const uint8_t column, String* st
 	}
 }
 
+void OLED_showStringForCharArray_method(const uint8_t line, const uint8_t column, const char* charArray) {
+	uint8_t cnt = 0;
+	while (charArray[cnt] != '\0')
+	{
+		OLED_showChar_method(line, column + cnt, charArray[cnt]);
+		cnt++;
+	}
+}
+
 /**
   *  OLED清屏
   */

@@ -21,6 +21,8 @@ static ArgListen agrsManagerList[ARGSNUM];
 static volatile uint8_t cnt = 0;
 volatile static uint16_t oledUpdateFlag = 0;
 
+extern volatile uint8_t errorRaise;
+
 // ---------------Init---------------
 void ArgListener_init(void) {
     ArgListener_registerForGetter_method(Motor_motorPwm_getter, argName_pwm, 3);
@@ -72,6 +74,9 @@ void ArgListener_TIM4_interruptCallFunction(void) {
 
 // ---------------mainLoopCallFunction---------------
 void ArgListner_mainLoopFunction(void) {
+    if (errorRaise) {
+        return;
+    }
     if (oledUpdateFlag) {
         for (uint8_t i = 0; i < ARGSNUM; i++) {
             if (agrsManagerList[i].flag) {
